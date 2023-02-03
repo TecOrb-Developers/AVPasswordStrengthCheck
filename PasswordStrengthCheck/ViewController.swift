@@ -11,6 +11,7 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var rotateIcon: AVFadeImageView!
     
+    @IBOutlet weak var strengthLabel: UILabel!
     
   //  @IBOutlet weak var txtForStrength: TextFieldWithPadding!
     @IBOutlet weak var psMeter: AVMeter!
@@ -23,6 +24,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.rotateIcon.image = UIImage(named: "8")
+        self.psMeter.strengthValueLabel.isHidden = true
         // Do any additional setup after loading the view.
     }
 
@@ -30,6 +32,7 @@ class ViewController: UIViewController {
     @IBAction func PasswordChange(_ sender: UITextField) {
         let password = sender as? UITextField
         psMeter.iconCheckStatusdelegate = self
+        self.strengthLabel.text = psMeter.strengthValueLabel.text
         psMeter.updateStrengthIndication(password: password?.text ?? "")
     }
     

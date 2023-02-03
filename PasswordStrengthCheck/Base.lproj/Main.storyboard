@@ -42,18 +42,26 @@
                                     <constraint firstAttribute="width" constant="57" id="eCr-K5-16r"/>
                                 </constraints>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eQg-Qw-C8j">
+                                <rect key="frame" x="333" y="175" width="47" height="0.0"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="13"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="eQg-Qw-C8j" firstAttribute="centerX" secondItem="KFS-bw-HyT" secondAttribute="centerX" id="0UD-Bu-CdQ"/>
                             <constraint firstItem="jfO-ft-buj" firstAttribute="top" secondItem="hSH-4m-bex" secondAttribute="bottom" constant="21" id="6uc-yA-nd4"/>
                             <constraint firstItem="KFS-bw-HyT" firstAttribute="centerY" secondItem="hSH-4m-bex" secondAttribute="centerY" id="7pB-f3-9dr"/>
                             <constraint firstItem="hSH-4m-bex" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="70" id="RRX-HJ-dvK"/>
                             <constraint firstItem="KFS-bw-HyT" firstAttribute="height" secondItem="hSH-4m-bex" secondAttribute="height" id="Ten-8E-121"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="hSH-4m-bex" secondAttribute="trailing" constant="70" id="kzK-HG-cRF"/>
+                            <constraint firstItem="eQg-Qw-C8j" firstAttribute="top" secondItem="KFS-bw-HyT" secondAttribute="bottom" constant="8" symbolic="YES" id="cDK-CB-cRF"/>
+                            <constraint firstAttribute="trailing" secondItem="eQg-Qw-C8j" secondAttribute="trailing" constant="10" id="fCe-Ls-iKL"/>
+                            <constraint firstItem="KFS-bw-HyT" firstAttribute="leading" secondItem="jfO-ft-buj" secondAttribute="trailing" constant="8" symbolic="YES" id="hI5-fr-sBL"/>
                             <constraint firstItem="hSH-4m-bex" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="lma-hO-9ZP"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="KFS-bw-HyT" secondAttribute="trailing" constant="5" id="mjS-y5-EG0"/>
-                            <constraint firstItem="jfO-ft-buj" firstAttribute="trailing" secondItem="hSH-4m-bex" secondAttribute="trailing" id="pyg-JX-PnQ"/>
                             <constraint firstItem="jfO-ft-buj" firstAttribute="leading" secondItem="hSH-4m-bex" secondAttribute="leading" id="ufO-oB-z8L"/>
                             <constraint firstItem="KFS-bw-HyT" firstAttribute="leading" secondItem="hSH-4m-bex" secondAttribute="trailing" constant="8" symbolic="YES" id="y0j-kL-1CJ"/>
                         </constraints>
@@ -61,6 +69,7 @@
                     <connections>
                         <outlet property="psMeter" destination="jfO-ft-buj" id="e6N-D5-9bm"/>
                         <outlet property="rotateIcon" destination="KFS-bw-HyT" id="jMO-Mb-ypo"/>
+                        <outlet property="strengthLabel" destination="eQg-Qw-C8j" id="NFA-63-dXR"/>
                         <outlet property="txtForStrength" destination="hSH-4m-bex" id="wad-N5-t8H"/>
                     </connections>
                 </viewController>
