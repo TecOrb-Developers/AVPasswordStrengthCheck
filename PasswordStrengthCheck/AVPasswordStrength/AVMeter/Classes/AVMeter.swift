@@ -10,12 +10,20 @@ import UIKit
 
 //PSMeterDelegate
 public protocol AVMeterDelegate {
-    func psMeter(_ psMeter: AVMeter, didChangeStrength passwordStrength: PasswordStrength)
+    func psMeter(_ psMeter: AVMeter, didChangeStrength passwordStrength: AVPasswordStrength)
+    func psMeter(_ psMeter: AVMeter, didChangeStrength passwordStrength: AVPasswordValidation)
 }
 
 public protocol AVRotateTextIconsDelegate {
-    func iconsStatusWithAVMeter(_ psMeter: AVMeter, didChangeStrength passwordStrength: PasswordStrength)
+    func iconsStatusWithAVMeter(_ psMeter: AVMeter, didChangeStrength passwordStrength: AVPasswordStrength)
+    func iconsRegexStatusWithAVMeter(_ psMeter: AVMeter, didChangeStrength passwordStrength: AVPasswordValidation)
 }
+
+/*
+extension AVRotateTextIconsDelegate{
+    func iconsRegexStatusWithAVMeter(_ psMeter: AVMeter, didChangeStrength passwordStrength: AVPasswordValidation){}
+}
+*/
 
 @IBDesignable public class AVMeter: UIView {
     
@@ -110,13 +118,14 @@ public protocol AVRotateTextIconsDelegate {
 
     // MARK: Variables
     private var passwordManager: AVBasePasswordManager!
+    private var passwordValidationManager: AVValidationPasswordManager!
 
     public var delegate: AVMeterDelegate? {
         didSet {
             delegate?.psMeter(self, didChangeStrength: passwordManager?.passwordStrength() ?? .empty)
         }
     }
-    public var passwordStrength: PasswordStrength? {
+    public var passwordStrength: AVPasswordStrength? {
         return passwordManager?.passwordStrength()
     }
 
@@ -161,13 +170,33 @@ public protocol AVRotateTextIconsDelegate {
             if currentPasswordManager != previousPasswordManager {
                 delegate?.psMeter(self, didChangeStrength: currentPasswordManager.passwordStrength())
             }
-            updateView(passwordStrengthManager: currentPasswordManager)
+            self.updateView(passwordStrengthManager: currentPasswordManager)
             self.iconCheckStatusdelegate?.iconsStatusWithAVMeter(self, didChangeStrength: currentPasswordManager.passwordStrength())
             print("11 \(currentPasswordManager.decorator)")
         } else {
             passwordManager = PasswordManagerFactory.create(forPassword: password, with: statesDecorator, using: passwordEstimator)
             delegate?.psMeter(self, didChangeStrength: passwordManager.passwordStrength())
             updateView(passwordStrengthManager: self.passwordManager)
+            print("22")
+        }
+    }
+    
+    public func updateValidationStrengthIndication(password: String) {
+        if let previousPasswordManager = passwordValidationManager {
+            let currentPasswordManager = PasswordManagerFactory.createPasswordValidation(forPassword: password, with: statesDecorator, using: passwordEstimator)
+            self.passwordValidationManager = currentPasswordManager
+            if currentPasswordManager != previousPasswordManager {
+                self.delegate?.psMeter(self, didChangeStrength: currentPasswordManager.passwordStrength())
+            }
+            self.updateValidationView(passwordStrengthManager: currentPasswordManager)
+            self.iconCheckStatusdelegate?.iconsRegexStatusWithAVMeter(self, didChangeStrength: currentPasswordManager.passwordStrength())
+            print(currentPasswordManager.passwordStrength())
+            print("11 \(currentPasswordManager.decorator)")
+        } else {
+            self.passwordValidationManager = PasswordManagerFactory.createPasswordValidation(forPassword: password, with: statesDecorator, using: passwordEstimator)
+            self.delegate?.psMeter(self, didChangeStrength: passwordManager.passwordStrength())
+            self.iconCheckStatusdelegate?.iconsRegexStatusWithAVMeter(self, didChangeStrength: passwordValidationManager.passwordStrength())
+            self.updateValidationView(passwordStrengthManager: self.passwordValidationManager)
             print("22")
         }
     }
@@ -180,6 +209,13 @@ public protocol AVRotateTextIconsDelegate {
         }
         strengthValueLabel.textColor = passwordStrengthManager.valueTextColor()
     }
-
     
+    private func updateValidationView(passwordStrengthManager: AVValidationPasswordManager) {
+        strengthProgressBar.animateTo(progress: CGFloat(passwordStrengthManager.strengthValue()))
+        strengthValueLabel.text = passwordStrengthManager.strengthTitle()
+        UIView.animate(withDuration: 0.2) {
+            self.strengthProgressBar.barFillColor = passwordStrengthManager.progressTextColor()
+        }
+        strengthValueLabel.textColor = passwordStrengthManager.valueTextColor()
+    }
 }

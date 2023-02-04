@@ -9,7 +9,6 @@
 import UIKit
 
 class PasswordManagerFactory {
-
     static func create(forPassword password: String, with decorator: AVStrengthViewStatesDecorator, using estimator: AVPasswordEstimator) -> AVBasePasswordManager {
         switch estimator.estimatePassword(password) {
         case .empty:
@@ -28,9 +27,51 @@ class PasswordManagerFactory {
             return FairPasswordManager(decorator: decorator.fairPasswordDecorator)
         }
     }
+    
+    static func createPasswordValidation(forPassword password: String, with decorator: AVStrengthViewStatesDecorator, using estimator: AVPasswordEstimator) -> AVValidationPasswordManager {
+        switch estimator.estimateValidatePassword(password) {
+        case .atLeatEightCount:
+            return AtLeatEightCountPasswordManager(decorator: decorator.atLeatEightCountPasswordDecorator)
+        case .atLeastOneDigit:
+            return AtLeastOneDigitPasswordManager(decorator: decorator.atLeastOneDigitPasswordDecorator)
+        case .atLeastOneLetter:
+            return AtLeastOneLetterPasswordManager(decorator: decorator.atLeastOneLetterPasswordDecorator)
+        case .noWhiteSpace:
+            return NoWhiteSpaceStrengthPasswordManager(decorator: decorator.noWhiteSpacePasswordDecorator)
+        case .empty:
+            return EmmptyPasswordManager(decorator: decorator.emptyPasswordDecorator)
+        case .perfect:
+            return PerfectStrengthPasswordManager(decorator: decorator.emptyPasswordDecorator)
+        }
+    }
+    
+    
 }
 
-public enum PasswordStrength {
+/*
+ //At least 8 characters
+ if password.count < 8 {
+     return false
+ }
+
+ //At least one digit
+ if password.range(of: #"\d+"#, options: .regularExpression) == nil {
+     return false
+ }
+
+ //At least one letter
+ if password.range(of: #"\p{Alphabetic}+"#, options: .regularExpression) == nil {
+     return false
+ }
+
+ //No whitespace charcters
+ if password.range(of: #"\s+"#, options: .regularExpression) != nil {
+     return false
+ }
+ */
+
+//PasswordStrength
+public enum AVPasswordStrength {
     case empty
     case veryWeak
     case weak
@@ -40,14 +81,27 @@ public enum PasswordStrength {
     case reasonable
 }
 
+public enum AVPasswordValidation {
+    case empty
+    case atLeatEightCount
+    case atLeastOneDigit
+    case atLeastOneLetter
+    case noWhiteSpace
+    case perfect
+}
+
 open class Navajo {
     /// Gets strength of a password.
     ///
     /// - parameter password: Password string to be calculated
     ///
     /// - returns: Level of strength in NJOPasswordStrength
-    public static func strength(ofPassword password: String) -> PasswordStrength {
+    public static func strength(ofPassword password: String) -> AVPasswordStrength {
         return passwordStrength(forEntropy: entropy(of: password))
+    }
+    
+    public static func strengthValidation(ofPassword password: String) -> AVPasswordValidation {
+        return self.validatePassword(password)
     }
 
     /// Converts NJOPasswordStrength to localized string.
@@ -55,7 +109,7 @@ open class Navajo {
     /// - parameter strength: NJOPasswordStrength to be converted
     ///
     /// - returns: Localized string
-    public static func localizedString(forStrength strength: PasswordStrength) -> String {
+    public static func localizedString(forStrength strength: AVPasswordStrength) -> String {
         switch strength {
         case .veryWeak:
             return NSLocalizedString("NAVAJO_VERY_WEAK", tableName: nil, bundle: Bundle.main, value: "Very Weak", comment: "Navajo - Very weak")
@@ -91,7 +145,6 @@ open class Navajo {
             guard let unicodeScalars = subString?.first?.unicodeScalars.first else {
                 return
             }
-
             if !includesLowercaseCharacter && CharacterSet.lowercaseLetters.contains(unicodeScalars) {
                 includesLowercaseCharacter = true
                 sizeOfCharacterSet += 26
@@ -130,7 +183,7 @@ open class Navajo {
         return log2f(sizeOfCharacterSet) * Float(string.count)
     }
 
-    private static func passwordStrength(forEntropy entropy: Float) -> PasswordStrength {
+    private static func passwordStrength(forEntropy entropy: Float) -> AVPasswordStrength {
         if entropy < 28 {
             return .veryWeak
         } else if entropy < 36 {
@@ -145,6 +198,20 @@ open class Navajo {
             return .fair
         } else {
             return .veryStrong
+        }
+    }
+    
+   private static func validatePassword(_ password: String) -> AVPasswordValidation {
+        if password.count < 8 {
+            return .atLeatEightCount
+        } else if password.range(of: #"\d+"#, options: .regularExpression) == nil {
+            return .atLeastOneDigit
+        } else if password.range(of: #"\p{Alphabetic}+"#, options: .regularExpression) == nil {
+            return .atLeastOneLetter
+        } else if password.range(of: #"\s+"#, options: .regularExpression) != nil {
+            return .noWhiteSpace
+        } else {
+            return .perfect
         }
     }
 }

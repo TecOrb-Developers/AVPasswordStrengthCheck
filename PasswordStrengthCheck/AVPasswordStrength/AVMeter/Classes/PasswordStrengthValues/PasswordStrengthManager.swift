@@ -8,10 +8,10 @@
 
 import UIKit
 
-class AVBasePasswordManager: Equatable {
+class AVValidationPasswordManager: Equatable {
 
-    static func == (lhs: AVBasePasswordManager, rhs: AVBasePasswordManager) -> Bool {
-        return lhs.passwordStrength() == rhs.passwordStrength()
+    static func == (lhs: AVValidationPasswordManager, rhs: AVValidationPasswordManager) -> Bool {
+        return  lhs.passwordStrength() == rhs.passwordStrength()
     }
 
     var decorator: ViewDecoratorProtocol
@@ -32,12 +32,41 @@ class AVBasePasswordManager: Equatable {
     func strengthValue() -> Float {
         fatalError("Not Implemented")
     }
-    func passwordStrength() -> PasswordStrength {
+    func passwordStrength() -> AVPasswordValidation {
+        fatalError("Not Implemented")
+    }
+    func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
+    }
+}
+
+class AVBasePasswordManager: Equatable {
+
+    static func == (lhs: AVBasePasswordManager, rhs: AVBasePasswordManager) -> Bool {
+        return lhs.passwordStrength() == rhs.passwordStrength()
+    }
+
+    var decorator: ViewDecoratorProtocol
+    init(decorator: ViewDecoratorProtocol) {
+        self.decorator = decorator
+    }
+
+    func valueTextColor() -> UIColor {
+        return decorator.textColor
+    }
+    func progressTextColor() -> UIColor {
+        return decorator.progressColor
+    }
+    func strengthTitle() -> String {
+        return decorator.title
+    }
+    func strengthValue() -> Float {
+        fatalError("Not Implemented")
+    }
+    func passwordStrength() -> AVPasswordStrength {
         fatalError("Not Implemented")
     }
 
     func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
-
     }
 }
 
@@ -48,7 +77,7 @@ class EmptyPasswordManager: AVBasePasswordManager {
         return 0
     }
 
-    override func passwordStrength() -> PasswordStrength {
+    override func passwordStrength() -> AVPasswordStrength {
         return .empty
     }
     override func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
@@ -62,7 +91,7 @@ class VeryWeakStrengthPasswordManager: AVBasePasswordManager {
         return 0.2
     }
 
-    override func passwordStrength() -> PasswordStrength {
+    override func passwordStrength() -> AVPasswordStrength {
         return .veryWeak
     }
     override func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
@@ -71,12 +100,11 @@ class VeryWeakStrengthPasswordManager: AVBasePasswordManager {
 }
 
 class WeakPasswordManager: AVBasePasswordManager {
-
     override func strengthValue() -> Float {
         return 0.4
     }
 
-    override func passwordStrength() -> PasswordStrength {
+    override func passwordStrength() -> AVPasswordStrength {
         return .weak
     }
     override func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
@@ -85,12 +113,11 @@ class WeakPasswordManager: AVBasePasswordManager {
 }
 
 class FairPasswordManager: AVBasePasswordManager {
-
     override func strengthValue() -> Float {
         return 0.6
     }
 
-    override func passwordStrength() -> PasswordStrength {
+    override func passwordStrength() -> AVPasswordStrength {
         return .fair
     }
     override func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
@@ -99,12 +126,11 @@ class FairPasswordManager: AVBasePasswordManager {
 }
 
 class StrongPasswordManager: AVBasePasswordManager {
-
     override func strengthValue() -> Float {
         return 0.8
     }
 
-    override func passwordStrength() -> PasswordStrength {
+    override func passwordStrength() -> AVPasswordStrength {
         return .strong
     }
     override func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
@@ -113,15 +139,98 @@ class StrongPasswordManager: AVBasePasswordManager {
 }
 
 class VeryStrongStrengthPasswordManager: AVBasePasswordManager {
-
     override func strengthValue() -> Float {
         return 1.0
     }
 
-    override func passwordStrength() -> PasswordStrength {
+    override func passwordStrength() -> AVPasswordStrength {
         return .veryStrong
     }
     override func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
         decorator = statesDecorator.veryStrongPasswordDecorator
+    }
+}
+
+//************************* Password Validation For Regex *************************
+
+class AtLeatEightCountPasswordManager: AVValidationPasswordManager {
+    override func strengthValue() -> Float {
+        return 0.6
+    }
+    override func passwordStrength() -> AVPasswordValidation {
+        return .atLeatEightCount
+    }
+    override func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
+        decorator = statesDecorator.atLeatEightCountPasswordDecorator
+    }
+}
+
+class AtLeastOneDigitPasswordManager: AVValidationPasswordManager {
+    override func strengthValue() -> Float {
+        return 0.7
+    }
+    
+    override func passwordStrength() -> AVPasswordValidation {
+        return .atLeastOneDigit
+    }
+    override func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
+        decorator = statesDecorator.atLeastOneDigitPasswordDecorator
+    }
+}
+
+class AtLeastOneLetterPasswordManager: AVValidationPasswordManager {
+    override func strengthValue() -> Float {
+        return 0.6
+    }
+    
+    override func passwordStrength() -> AVPasswordValidation {
+        return .atLeastOneLetter
+    }
+
+    override func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
+        decorator = statesDecorator.atLeastOneLetterPasswordDecorator
+    }
+}
+
+class NoWhiteSpaceStrengthPasswordManager: AVValidationPasswordManager {
+
+    override func strengthValue() -> Float {
+        return 0.4
+    }
+    
+    override func passwordStrength() -> AVPasswordValidation {
+        return .noWhiteSpace
+    }
+
+    override func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
+        decorator = statesDecorator.noWhiteSpacePasswordDecorator
+    }
+}
+
+class PerfectStrengthPasswordManager: AVValidationPasswordManager {
+    override func strengthValue() -> Float {
+        return 1.0//0.8
+    }
+    
+    override func passwordStrength() -> AVPasswordValidation {
+        return .perfect
+    }
+
+    override func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
+        decorator = statesDecorator.noWhiteSpacePasswordDecorator
+    }
+}
+
+class EmmptyPasswordManager: AVValidationPasswordManager {
+
+    override func strengthValue() -> Float {
+        return 0.1
+    }
+
+    override func passwordStrength() -> AVPasswordValidation {
+        return .empty
+    }
+    override func updateDecorator(statesDecorator: AVStrengthViewStatesDecorator) {
+        decorator = statesDecorator.emptyPasswordDecorator
     }
 }

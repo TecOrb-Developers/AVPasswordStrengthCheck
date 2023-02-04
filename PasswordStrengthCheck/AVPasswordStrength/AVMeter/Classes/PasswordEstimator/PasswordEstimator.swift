@@ -11,12 +11,13 @@ import Foundation
 
 //PasswordEstimator
 public protocol AVPasswordEstimator {
-    func estimatePassword(_ password: String) -> PasswordStrength
+    func estimatePassword(_ password: String) -> AVPasswordStrength
+    func estimateValidatePassword(_ password: String) -> AVPasswordValidation
 }
 
 struct DefaultPasswordEstimator: AVPasswordEstimator {
-    func estimatePassword(_ password: String) -> PasswordStrength {
-
+    
+    func estimatePassword(_ password: String) -> AVPasswordStrength {
         if password.isEmpty {
             return .empty
         } else {
@@ -36,6 +37,28 @@ struct DefaultPasswordEstimator: AVPasswordEstimator {
                 return .empty
             case .fair:
                 return .fair
+            }
+        }
+    }
+    
+    func estimateValidatePassword(_ password: String) -> AVPasswordValidation {
+        if password.isEmpty {
+            return .empty
+        } else {
+            let strength = Navajo.strengthValidation(ofPassword: password)
+            switch strength {
+            case .empty:
+                return .empty
+            case .atLeatEightCount:
+                return .atLeatEightCount
+            case .atLeastOneDigit:
+                return .atLeastOneDigit
+            case .atLeastOneLetter:
+                return .atLeastOneLetter
+            case .noWhiteSpace:
+                return .noWhiteSpace
+            case .perfect:
+                return .perfect
             }
         }
     }
